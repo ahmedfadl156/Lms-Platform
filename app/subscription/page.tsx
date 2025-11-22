@@ -1,5 +1,9 @@
+import { PricingTable } from "@clerk/nextjs";
+
 export default function page() {
 return (
-    <div>page</div>
+    <div className="flex items-center justify-center h-[50vh] px-10">
+        <PricingTable />
+    </div>
 )
 }

@@ -1,4 +1,5 @@
 'use client'
+import { SignedIn, SignedOut, SignIn, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +31,14 @@ return (
             {navItems.map((item) => (
                 <Link href={item.href} key={item.label} className={`${activeLink === item.href ? 'text-orange-500 font-semibold ' : 'text-black font-medium'}text-lg cursor-pointer`}>{item.label}</Link>
             ))}
+            <SignedOut>
+                <SignInButton>
+                    <button className="btn-signin">Sign In</button>
+                </SignInButton>
+            </SignedOut>
+            <SignedIn>
+                <UserButton afterSignOutUrl="/"/>
+            </SignedIn>
         </div>
     </nav>
 )
