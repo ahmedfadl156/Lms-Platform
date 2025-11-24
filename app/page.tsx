@@ -20,7 +20,7 @@ const Page = async () => {
           <p>No companions found</p>
         }
       </section>
-      <section className="home-section">
+      <section className="home-section mb-12">
         <CompanionsList title="Recently Completed Lessons" companions={recentSessions} classNames="w-2/3 max-lg:w-full" />
         <Cta />
       </section>

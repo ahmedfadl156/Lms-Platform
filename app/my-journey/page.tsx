@@ -1,6 +1,7 @@
+import CompanionCard from "@/components/CompanionCard";
 import CompanionsList from "@/components/CompanionsList";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { getUserCompanions, getUserSessions } from "@/lib/actions/companions.action";
+import { getAllBookmarked, getUserCompanions, getUserSessions } from "@/lib/actions/companions.action";
 import { currentUser } from "@clerk/nextjs/server"
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
@@ -14,6 +15,8 @@ export default async function page() {
 
     const companions = await getUserCompanions(user.id);
     const sessionHistory = await getUserSessions(user.id);
+    const bookmarked = await getAllBookmarked(user.id);
+    console.log(bookmarked);
     return (
         <main className="">
             <section className="flex flex-col gap-8 md:flex-row items-center justify-between mb-12">
@@ -42,12 +45,29 @@ export default async function page() {
                 </div>
             </section>
             <Accordion type="multiple">
+                {/* Recent Sessions */}
                 <AccordionItem value="recent">
                     <AccordionTrigger className="text-2xl font-bold">Recent Sessions</AccordionTrigger>
                     <AccordionContent>
                         <CompanionsList title="Recent Sessions" companions={sessionHistory} />
                     </AccordionContent>
                 </AccordionItem>
+                {/* Bookmarked Sessions */}
+                <AccordionItem value="bookmarked">
+                    <AccordionTrigger className="text-2xl font-bold">Bookmarked Sessions</AccordionTrigger>
+                    <AccordionContent>
+                        {bookmarked.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {bookmarked.map((companion) => (
+                                    <CompanionCard key={companion.id} {...companion} />
+                                ))}
+                            </div>
+                        ) : (
+                            <p>No Bookmarked Sessions</p>
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+                {/* My Companions */}
                 <AccordionItem value="companions">
                     <AccordionTrigger className="text-2xl font-bold">My Companions {`(${companions.length})`}</AccordionTrigger>
                     <AccordionContent>

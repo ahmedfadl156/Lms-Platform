@@ -2,6 +2,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { createSupabaseClient } from "../supabase";
 import { Suspense } from "react";
+import { revalidatePath } from "next/cache";
 
 export const createCompanion = async (formData: CreateCompanion) => {
     // Get Clerk user id from auth and supabase
@@ -17,6 +18,7 @@ export const createCompanion = async (formData: CreateCompanion) => {
 }
 
 export const getAllCompanions = async ({limit = 10 , page = 1 , subject , topic} : GetAllCompanions) => {
+    const {userId} = await auth();
     const supabse = createSupabaseClient();
     
     // make query to filter companions based on subject or topic
@@ -38,6 +40,14 @@ export const getAllCompanions = async ({limit = 10 , page = 1 , subject , topic}
 
     const {data: companions , error} = await query;
     if(error) throw new Error(error?.message || "Failed To Fetch Companions");
+    // Get Bookmarked Companions
+    const companionsIds = companions.map(({id}) => id);
+
+    const {data: bookmarked} = await supabse.from("bookmarks").select().eq("user_id" , userId).in("companion_id" , companionsIds);
+    const marks = new Set(bookmarked?.map(({companion_id}) => companion_id));
+    companions.forEach(companion => {
+        companion.bookmarked = marks.has(companion.id);
+    })
     return companions;
 }
 
@@ -46,6 +56,7 @@ export const getCompanion = async (id: string) => {
 
     const {data ,  error} = await supabse.from("companions").select("*").eq("id" , id).single();
     if(error) throw new Error(error?.message || "Failed To Fetch Companion");
+
     return data;
 }
 
@@ -105,4 +116,41 @@ export const newCompanionPermisions = async () => {
 
     if(companionCount >= limit) return false;
     return true;
+}
+
+
+export const addToBookmarked = async (companionId: string , path: string) => {
+    const {userId} = await auth();
+    if(!userId) return;
+    const supabase = createSupabaseClient();
+
+    const {data , error} = await supabase.from("bookmarks").insert(
+        {
+            user_id: userId,
+            companion_id: companionId
+        }
+    ).select();
+
+    if(error) throw new Error(error?.message || "Failed To Add To Bookmarked");
+    revalidatePath(path);
+    return data;
+}
+
+export const removeFromBookmarked = async (companionId: string , path: string) => {
+    const {userId} = await auth();
+    if(!userId) return;
+    const supabase = createSupabaseClient();
+
+    const {data , error} = await supabase.from("bookmarks").delete().eq("user_id" , userId).eq("companion_id" , companionId);
+    if(error) throw new Error(error?.message || "Failed To Remove From Bookmarked");
+    revalidatePath(path);
+    return data;
+}
+
+export const getAllBookmarked = async (userId: string) => {
+    const supabase = createSupabaseClient();
+
+    const {data , error} = await supabase.from("bookmarks").select(`companions: companion_id (*)`).eq("user_id" , userId);
+    if(error) throw new Error(error?.message || "Failed To Fetch Bookmarked Companions");
+    return data.map(({companions}) => companions);
 }

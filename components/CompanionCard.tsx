@@ -1,7 +1,11 @@
+'use client'
+import { addToBookmarked, removeFromBookmarked } from "@/lib/actions/companions.action";
 import { getSubjectColor } from "@/lib/utils";
 import { Timer } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import path from "path";
 
 interface CompanionCardProps {
     id: string;
@@ -9,20 +13,30 @@ interface CompanionCardProps {
     topic: string;
     subject: string;
     duration: number;
+    bookmarked?: boolean;
 }
 export default function CompanionCard({
     id,
     name,
     topic,
     subject,
-    duration
+    duration,
+    bookmarked
 }: CompanionCardProps) {
+    const pathname = usePathname();
+    const handleBookmark = async () => {
+        if(bookmarked){
+            await removeFromBookmarked(id , pathname);
+        }else{
+            await addToBookmarked(id , pathname);
+        }
+    }
     return (
         <div className="border border-black px-6 py-4 rounded-xl flex flex-col h-full" style={{ backgroundColor: getSubjectColor(subject) }}>
             <div className="header flex items-center justify-between">
                 <span className="bg-black text-white px-3 py-1 rounded-lg">{subject}</span>
-                <button className="bg-black p-2 rounded-full cursor-pointer">
-                    <Image src="/icons/bookmark.svg" alt="bookmark" width={12.5} height={15} />
+                <button className="bg-black p-2 rounded-full cursor-pointer" onClick={handleBookmark}>
+                    <Image src={bookmarked ? "/icons/bookmark-filled.svg" : "/icons/bookmark.svg"} alt="bookmark" width={12.5} height={15} />
                 </button>
             </div>
             <div className="content mt-4 flex flex-col gap-3 flex-1">
