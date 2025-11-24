@@ -20,7 +20,7 @@ return (
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {companions?.map((companion) => (
+                {companions?.length > 0 ? companions?.map((companion) => (
                     <TableRow key={companion.id}>
                         <TableCell>
                             <Link href={`/companions/${companion.id}`}>
@@ -44,7 +44,11 @@ return (
                             <p className="text-lg">{companion.duration} mins</p>
                         </TableCell>
                     </TableRow>
-                ))}
+                )) : <TableRow>
+                    <TableCell colSpan={3} className="text-center">
+                        No companions found
+                    </TableCell>
+                </TableRow>}
             </TableBody>
         </Table>
     </div>

@@ -76,3 +76,33 @@ export const getUserSessions = async (userId: string , limit = 10) => {
     if(error) throw new Error(error?.message || "Failed To Fetch User Sessions");
     return data.map(({companions}) => companions);
 }
+
+export const getUserCompanions = async (userId: string) => {
+    const supabase = createSupabaseClient();
+
+    const {data , error} = await supabase.from("companions").select().eq("author" , userId);
+    if(error) throw new Error(error?.message || "Failed To Fetch User Companions");
+    return data;
+}
+
+export const newCompanionPermisions = async () => {
+    const {userId , has} = await auth();
+    const supabase = createSupabaseClient();
+
+    let limit = 0
+
+    if(has({plan: 'pro_companion'})){
+        return true;
+    } else if(has({feature: "10_active_companions"})){
+        limit = 10;
+    } else if(has({feature: "3_active_companions"})){
+        limit = 3;
+    }
+
+    const {data , error} = await supabase.from("companions").select('id' , {count: 'exact'}).eq("author" , userId);
+    if(error) throw new Error(error?.message || "Failed To Fetch User Companions");
+    const companionCount = data?.length || 0;
+
+    if(companionCount >= limit) return false;
+    return true;
+}

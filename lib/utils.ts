@@ -24,7 +24,7 @@ export const configureAssistant = (voice: string, style: string) => {
     transcriber: {
       provider: "deepgram",
       model: "nova-3",
-      language: "ar",
+      language: "en",
     },
     voice: {
       provider: "11labs",
@@ -37,7 +37,7 @@ export const configureAssistant = (voice: string, style: string) => {
     },
     model: {
       provider: "openai",
-      model: "gpt-5.1",
+      model: "gpt-5",
       messages: [
         {
           role: "system",

@@ -60,7 +60,6 @@ export default function CompanionComponent({
         const onMessage = (message: any) => {
             if(message.type === "transcript" && message.transcriptType === 'final') {
                 const newMessage = {role: message.role , content: message.transcript}
-                console.log(`${message.role}: ${message.transcript}`)
                 setTranscript((prev: any[]) => [newMessage , ...prev])
             }
         }

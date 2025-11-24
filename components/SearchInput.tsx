@@ -44,7 +44,7 @@ export default function SearchInput() {
                 placeholder="Search Companions....."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="outline-none"
+                className="outline-none px-2"
             />
         </div>
     )
