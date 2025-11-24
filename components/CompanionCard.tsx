@@ -1,5 +1,6 @@
 import { Timer } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface CompanionCardProps {
     id: string;
@@ -34,7 +35,7 @@ return (
             </span>    
         </div>
         <div className="grid">
-            <button className="bg-[#FE5933] cursor-pointer text-white px-6 py-2 rounded-lg mt-6">Launch Session</button>
+            <Link href={`/companions/${id}`} className="bg-[#FE5933] cursor-pointer text-white px-6 py-2 rounded-lg mt-6 text-center">Launch Session</Link>
         </div>
     </div>
 )
