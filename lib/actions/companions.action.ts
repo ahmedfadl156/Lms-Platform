@@ -24,7 +24,7 @@ export const getAllCompanions = async ({limit = 10 , page = 1 , subject , topic}
     // make query to filter companions based on subject or topic
     let query = supabse.from("companions").select();
 
-    if(subject && query){
+    if(subject && topic){
         query = query.ilike("subject" , `%${subject}%`).or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`)
     }
     else if(subject){
